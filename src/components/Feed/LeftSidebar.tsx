@@ -1,11 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import people1 from '../../assets/images/people1.png';
 import people2 from '../../assets/images/people2.png';
 import people3 from '../../assets/images/people3.png';
 import feedEvent1 from '../../assets/images/feed_event1.png';
 
 const LeftSidebar: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12 hidden lg:block w-1/4 px-4 h-full">
       <div className="_layout_left_sidebar_wrap flex flex-col h-full overflow-y-auto scrollbar-hide pt-[18px]">
@@ -87,7 +89,11 @@ const LeftSidebar: React.FC = () => {
               <Link to="/events" className="_left_inner_event_link text-[#1890FF] text-[14px]">See all</Link>
             </div>
             {[1, 2].map((item) => (
-              <Link key={item} className="_left_inner_event_card_link block mb-[20px]" to="/event-single">
+              <div 
+                key={item} 
+                className="_left_inner_event_card_link block mb-[20px] cursor-pointer" 
+                onClick={() => navigate('/event-single')}
+              >
                 <div className="_left_inner_event_card border border-[#F0F2F5] dark:border-[#2D3748] rounded-[6px] overflow-hidden group transition-all hover:shadow-md">
                   <div className="_left_inner_event_card_iamge h-[120px]">
                     <img src={feedEvent1} alt="Image" className="_card_img w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
@@ -104,10 +110,18 @@ const LeftSidebar: React.FC = () => {
                   <hr className="_underline border-[#F0F2F5] dark:border-[#2D3748]" />
                   <div className="_left_inner_event_bottom p-[12px] flex items-center justify-between">
                     <p className="_left_iner_event_bottom text-[12px] text-[#666] dark:text-gray-400">17 People Going</p>
-                    <Link to="#0" className="_left_iner_event_bottom_link text-[13px] text-white bg-[#1890FF] rounded-[4px] px-[12px] py-[4px]">Going</Link>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Handle going logic here
+                      }}
+                      className="_left_iner_event_bottom_link text-[13px] text-white bg-[#1890FF] rounded-[4px] px-[12px] py-[4px]"
+                    >
+                      Going
+                    </button>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>

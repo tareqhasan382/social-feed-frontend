@@ -74,7 +74,7 @@ const Stories: React.FC = () => {
         <div className="_feed_inner_ppl_card_area">
           <ul className="_feed_inner_ppl_card_area_list flex gap-[12px] pb-[4px]">
             <li className="_feed_inner_ppl_card_area_item flex-shrink-0 w-[70px] text-center">
-              <a href="#0" className="_feed_inner_ppl_card_area_link">
+              <div className="_feed_inner_ppl_card_area_link cursor-pointer">
                 <div className="_feed_inner_ppl_card_area_story relative w-[60px] h-[60px] mx-auto mb-[8px]">
                   <img src={mobileStoryImg} alt="Image" className="_card_story_img w-full h-full rounded-full object-cover" />
                   <div className="_feed_inner_ppl_btn absolute bottom-0 right-0">
@@ -86,16 +86,16 @@ const Stories: React.FC = () => {
                   </div>
                 </div>
                 <p className="_feed_inner_ppl_card_area_link_txt text-[12px] text-[#212121] dark:text-gray-400 font-medium">Your Story</p>
-              </a>
+              </div>
             </li>
             {[mobileStoryImg1, mobileStoryImg2, mobileStoryImg1, mobileStoryImg2].map((img, idx) => (
               <li key={idx} className="_feed_inner_ppl_card_area_item flex-shrink-0 w-[70px] text-center">
-                <a href="#0" className="_feed_inner_ppl_card_area_link">
+                <div className="_feed_inner_ppl_card_area_link cursor-pointer">
                   <div className={`_feed_inner_ppl_card_area_story_${idx % 2 === 0 ? 'active' : 'inactive'} w-[60px] h-[60px] mx-auto mb-[8px] p-[2px] rounded-full border-2 ${idx % 2 === 0 ? 'border-[#1890FF]' : 'border-gray-200'}`}>
                     <img src={img} alt="Image" className="_card_story_img1 w-full h-full rounded-full object-cover" />
                   </div>
                   <p className="_feed_inner_ppl_card_area_txt text-[12px] text-[#212121] dark:text-gray-400 font-medium">Ryan...</p>
-                </a>
+                </div>
               </li>
             ))}
           </ul>
