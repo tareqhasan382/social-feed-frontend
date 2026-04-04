@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import cardPpl1 from '../../assets/images/card_ppl1.png';
 import cardPpl2 from '../../assets/images/card_ppl2.png';
 import cardPpl3 from '../../assets/images/card_ppl3.png';
@@ -9,19 +9,34 @@ import mobileStoryImg1 from '../../assets/images/mobile_story_img1.png';
 import mobileStoryImg2 from '../../assets/images/mobile_story_img2.png';
 
 const Stories: React.FC = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       {/* Desktop Stories */}
       <div className="_feed_inner_ppl_card hidden lg:block mb-[16px] relative">
         <div className="_feed_inner_story_arrow absolute top-1/2 -translate-y-1/2 right-[-15px] z-10">
-          <button type="button" className="_feed_inner_story_arrow_btn bg-[#1890FF] w-[30px] h-[30px] rounded-full flex items-center justify-center shadow-md">
+          <button 
+            type="button" 
+            onClick={scrollRight}
+            className="_feed_inner_story_arrow_btn bg-[#1890FF] w-[30px] h-[30px] rounded-full flex items-center justify-center shadow-md hover:bg-[#0070e0] transition-all"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" width="9" height="8" fill="none" viewBox="0 0 9 8">
               <path fill="#fff" d="M8 4l.366-.341.318.341-.318.341L8 4zm-7 .5a.5.5 0 010-1v1zM5.566.659l2.8 3-.732.682-2.8-3L5.566.66zm2.8 3.682l-2.8 3-.732-.682 2.8-3 .732.682zM8 4.5H1v-1h7v1z" />
             </svg>
           </button>
         </div>
-        <div className="row flex flex-wrap -mx-2">
-          <div className="col-xl-3 col-lg-3 col-md-4 col-sm-4 col w-1/4 px-2">
+        <div 
+          ref={scrollRef}
+          className="row flex flex-nowrap -mx-2 overflow-x-auto scrollbar-hide"
+        >
+          <div className="col-xl-3 col-lg-3 col-md-4 col-sm-4 col flex-shrink-0 w-1/4 px-2">
             <div className="_feed_inner_profile_story relative rounded-[6px] overflow-hidden h-[180px] group cursor-pointer">
               <img src={cardPpl1} alt="Image" className="_profile_story_img w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all"></div>
@@ -37,8 +52,8 @@ const Stories: React.FC = () => {
               </div>
             </div>
           </div>
-          {[cardPpl2, cardPpl3, cardPpl4].map((img, idx) => (
-            <div key={idx} className="col-xl-3 col-lg-3 col-md-4 col-sm-4 col w-1/4 px-2">
+          {[cardPpl2, cardPpl3, cardPpl4, cardPpl2, cardPpl3, cardPpl4].map((img, idx) => (
+            <div key={idx} className="col-xl-3 col-lg-3 col-md-4 col-sm-4 col flex-shrink-0 w-1/4 px-2">
               <div className="_feed_inner_public_story relative rounded-[6px] overflow-hidden h-[180px] group cursor-pointer">
                 <img src={img} alt="Image" className="_public_story_img w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80 group-hover:opacity-100 transition-all"></div>
