@@ -28,11 +28,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             </div>
           </div>
         </div>
-        <button className="text-[#C4C4C4] hover:text-[#1890FF] transition-all">
+        <button className="text-[#C4C4C4] hover:text-[#1890FF] transition-all" aria-label="More options">
           <svg xmlns="http://www.w3.org/2000/svg" width="4" height="17" fill="none" viewBox="0 0 4 17">
-            <circle cx="2" cy="2" r="2" fill="currentColor"></circle>
-            <circle cx="2" cy="8" r="2" fill="currentColor"></circle>
-            <circle cx="2" cy="15" r="2" fill="currentColor"></circle>
+            <circle cx="2" cy="2" r="2" fill="currentColor" />
+            <circle cx="2" cy="8" r="2" fill="currentColor" />
+            <circle cx="2" cy="15" r="2" fill="currentColor" />
           </svg>
         </button>
       </div>

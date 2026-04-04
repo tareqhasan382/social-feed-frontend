@@ -12,29 +12,15 @@ import f7 from '../../assets/images/f7.png';
 import f8 from '../../assets/images/f8.png';
 import f9 from '../../assets/images/f9.png';
 import man from '../../assets/images/man.png';
-//import { useTheme } from '../../context/ThemeContext';
 
 const RightSidebar: React.FC = () => {
-  //const { theme, toggleTheme } = useTheme();
+ 
 
   return (
     <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12 hidden lg:block w-1/4 px-4 h-full">
       <div className="_layout_right_sidebar_wrap flex flex-col h-full overflow-y-auto scrollbar-hide pt-[18px]">
         
-        {/* Dark Mode Toggle */}
-        {/* <div className="_layout_mode_swithing_btn mb-[16px] flex justify-end">
-          <button onClick={toggleTheme} type="button" className="_layout_swithing_btn_link bg-white dark:bg-[#232E42] w-[48px] h-[48px] rounded-full flex items-center justify-center shadow-md transition-all">
-            {theme === 'light' ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 22 22">
-                <path fill="#212121" d="M11 1.375a.688.688 0 01.688.688v1.375a.688.688 0 11-1.375 0V2.063a.688.688 0 01.687-.688zM17.806 4.194a.688.688 0 01.972.973l-.973.972a.688.688 0 11-.972-.972l.973-.973zM20.625 11a.688.688 0 01-.688.688h-1.375a.688.688 0 110-1.375h1.375a.688.688 0 01.688.687zM17.806 17.806a.688.688 0 01.973-.972l.972.973a.688.688 0 11-.972.972l-.973-.973zM11 20.625a.688.688 0 01-.688-.688v-1.375a.688.688 0 111.375 0v1.375a.688.688 0 01-.687.688zM4.194 17.806a.688.688 0 01-.973-.972l.973-.973a.688.688 0 11.972.972l-.972.973zM1.375 11a.688.688 0 01.688-.688h1.375a.688.688 0 110 1.375H2.063a.688.688 0 01-.688-.687zM4.194 4.194a.688.688 0 01.972.973l-.972.972a.688.688 0 11-.973-.972l.973-.973zM11 6.188a4.813 4.813 0 100 9.625 4.813 4.813 0 000-9.625zM7.563 11a3.438 3.438 0 116.875 0 3.438 3.438 0 01-6.875 0z" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 22 22">
-                <path fill="#fff" d="M11 20.625a9.625 9.625 0 110-19.25.688.688 0 01.688.688.688.688 0 01-.132.404 8.25 8.25 0 0011.01 11.01.688.688 0 011.092.553 9.625 9.625 0 01-12.658 6.595z" />
-              </svg>
-            )}
-          </button>
-        </div> */}
+       
 
         {/* You Might Like Section */}
         <div className="_layout_right_sidebar_inner mb-[16px]">

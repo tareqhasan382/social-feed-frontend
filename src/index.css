@@ -1,10 +1,22 @@
-@import "tailwindcss";
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800&display=swap');
 
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+@theme {
+  --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+}
+
 @layer base {
+  html {
+    @apply transition-colors duration-200;
+  }
+
   body {
-    @apply font-['Poppins'] bg-[#F0F2F5] dark:bg-[#112032] text-[#2D3748] dark:text-white;
+    @apply bg-[#F0F2F5] text-[#2D3748] dark:bg-[#112032] dark:text-white;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 }
 
@@ -17,4 +29,3 @@
     scrollbar-width: none;
   }
 }
-
