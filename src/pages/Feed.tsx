@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from '../components/Feed/Header';
 import LeftSidebar from '../components/Feed/LeftSidebar';
 import RightSidebar from '../components/Feed/RightSidebar';
@@ -8,10 +9,60 @@ import PostCard from '../components/Feed/PostCard';
 import MobileBottomNav from '../components/Feed/MobileBottomNav';
 import { useTheme } from '../context/ThemeContext';
 import { useGetPostsQuery } from '../redux/postsApi';
+import type { Post } from '../types';
+
 
 const FeedPage: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
-  const { data: posts, isLoading, isError } = useGetPostsQuery();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const search = searchParams.get('search') || undefined;
+
+  const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
+  const { data, isLoading, isFetching, isError } = useGetPostsQuery({ cursor, limit: 10, search });
+  
+  const observerTarget = useRef(null);
+
+  // Reset cursor and posts when search changes
+  useEffect(() => {
+    setCursor(undefined);
+    setAllPosts([]);
+  }, [search]);
+
+  useEffect(() => {
+    if (data?.posts) {
+      if (cursor === undefined) {
+        setAllPosts(data.posts);
+      } else {
+        setAllPosts(prev => {
+          const newPosts = data.posts.filter(p => !prev.some(ep => ep.id === p.id));
+          return [...prev, ...newPosts];
+        });
+      }
+    }
+  }, [data, cursor]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && data?.nextCursor && !isFetching && !isLoading) {
+          setCursor(data.nextCursor);
+        }
+      },
+      { 
+        root: null, // use viewport
+        rootMargin: '200px', // start loading before user reaches the end
+        threshold: 0.1 
+      }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [data?.nextCursor, isFetching]);
 
   return (
     <div className="_layout_main_wrapper bg-[#F0F2F5] dark:bg-[#112032] h-screen overflow-hidden transition-all duration-200">
@@ -27,7 +78,7 @@ const FeedPage: React.FC = () => {
                 <Stories />
                 <PostCreator />
                 <div className="_feed_timeline_list">
-                  {isLoading && (
+                  {isLoading && allPosts.length === 0 && (
                     <div className="flex justify-center py-10">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1890FF]"></div>
                     </div>
@@ -37,10 +88,18 @@ const FeedPage: React.FC = () => {
                       Failed to load posts. Please try again later.
                     </div>
                   )}
-                  {posts?.map((post) => (
+                  {allPosts.map((post) => (
                     <PostCard key={post.id} post={post} />
                   ))}
-                  {!isLoading && posts?.length === 0 && (
+                  
+                  {/* Infinite Scroll Trigger */}
+                  <div ref={observerTarget} className="h-10 flex justify-center items-center">
+                    {isFetching && allPosts.length > 0 && (
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#1890FF]"></div>
+                    )}
+                  </div>
+
+                  {!isLoading && allPosts.length === 0 && (
                     <div className="text-center py-10 text-gray-500">
                       No posts yet. Be the first to post!
                     </div>

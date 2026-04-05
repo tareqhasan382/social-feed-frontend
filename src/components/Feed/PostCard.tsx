@@ -286,7 +286,11 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             </p>
             {post.imageUrl && (
               <div className="rounded-[6px] overflow-hidden">
-                <img src={post.imageUrl || avatar} alt="Post" className="w-full h-auto object-cover" />
+                {post.imageUrl.match(/\.(mp4|mov|avi|mkv|webm)$|video\/upload/i) ? (
+                  <video src={post.imageUrl} controls className="w-full h-auto object-cover max-h-[500px] bg-black" />
+                ) : (
+                  <img src={post.imageUrl || avatar} alt="Post" className="w-full h-auto object-cover" />
+                )}
               </div>
             )}
           </>
@@ -296,9 +300,23 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       <div className="_feed_inner_timeline_reaction flex items-center justify-between border-t border-b border-[#F0F2F5] dark:border-[#2D3748] py-[12px] mb-[16px]">
         <div className="flex items-center gap-[12px]">
           <div className="flex -space-x-[8px]">
-            <img src={reactImg1} alt="" className="w-[20px] h-[20px] rounded-full border border-white" />
-            <img src={reactImg2} alt="" className="w-[20px] h-[20px] rounded-full border border-white" />
-            <img src={reactImg3} alt="" className="w-[20px] h-[20px] rounded-full border border-white" />
+            {post.likedUsers && post.likedUsers.length > 0 ? (
+              post.likedUsers.map((user, index) => (
+                <img 
+                  key={user.id} 
+                  src={user.avatarUrl || avatar} 
+                  alt="" 
+                  className="w-[20px] h-[20px] rounded-full border border-white object-cover" 
+                  style={{ zIndex: 3 - index }}
+                />
+              ))
+            ) : (
+              <>
+                <img src={reactImg1} alt="" className="w-[20px] h-[20px] rounded-full border border-white" />
+                <img src={reactImg2} alt="" className="w-[20px] h-[20px] rounded-full border border-white" />
+                <img src={reactImg3} alt="" className="w-[20px] h-[20px] rounded-full border border-white" />
+              </>
+            )}
           </div>
           <span className="text-[13px] text-[#666] dark:text-gray-400">{post.likesCount}</span>
         </div>

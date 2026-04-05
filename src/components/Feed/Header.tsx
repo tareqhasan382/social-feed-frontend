@@ -14,11 +14,22 @@ const Header: React.FC = () => {
   const auth = useAppSelector((state: RootState) => state.auth);
   const [showNotify, setShowNotify] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-    const handleLogout = () => {
+  const [searchText, setSearchText] = useState('');
+
+  const handleLogout = () => {
     dispatch(userLoggedOut());
     navigate("/");
   };
-  //const isLoggedIn = !!auth?.user;
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchText.trim()) {
+      navigate(`/feed?search=${encodeURIComponent(searchText.trim())}`);
+    } else {
+      navigate('/feed');
+    }
+  };
+
   return (
     <>
       <nav className="_header_nav navbar navbar-expand-lg navbar-light bg-white dark:bg-[#232E42] border-b border-[#F0F2F5] dark:border-[#2D3748] sticky top-0 z-[1030] py-0 transition-all duration-200">
@@ -31,12 +42,18 @@ const Header: React.FC = () => {
 
           <div className="hidden lg:flex items-center flex-1 ml-[40px]">
             <div className="_header_form w-full max-w-[424px]">
-              <form className="_header_form_grp relative">
+              <form onSubmit={handleSearch} className="_header_form_grp relative">
                 <svg className="_header_form_svg absolute top-[12px] left-[18px]" xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="none" viewBox="0 0 17 17">
                   <circle cx="7" cy="7" r="6" stroke="#666" />
                   <path stroke="#666" strokeLinecap="round" d="M16 16l-3-3" />
                 </svg>
-                <input className="form-control _inpt1 w-full h-[40px] bg-[#F5F5F5] dark:bg-[#112032] border border-[#F5F5F5] dark:border-[#2D3748] rounded-[32px] pl-[47px] pr-[16px] py-[7px] text-[16px] focus:outline-none focus:border-[#1890FF] transition-all placeholder:text-gray-400 dark:text-white" type="search" placeholder="input search text" />
+                <input 
+                  className="form-control _inpt1 w-full h-[40px] bg-[#F5F5F5] dark:bg-[#112032] border border-[#F5F5F5] dark:border-[#2D3748] rounded-[32px] pl-[47px] pr-[16px] py-[7px] text-[16px] focus:outline-none focus:border-[#1890FF] transition-all placeholder:text-gray-400 dark:text-white" 
+                  type="search" 
+                  placeholder="input search text"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                />
               </form>
             </div>
             

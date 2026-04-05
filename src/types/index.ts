@@ -16,6 +16,7 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   isLiked: boolean;
+  likedUsers?: { id: string; avatarUrl: string | null }[];
   likesCount: number;
   commentsCount: number;
 }

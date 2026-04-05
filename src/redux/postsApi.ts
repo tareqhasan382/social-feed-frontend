@@ -4,15 +4,15 @@ import { baseApi } from "./api/baseApi";
 
 export const postsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getPosts: builder.query<Post[], { page?: number; limit?: number } | void>({
+    getPosts: builder.query<{ posts: Post[]; nextCursor?: string }, { cursor?: string; limit?: number; search?: string } | void>({
       query: (params) => ({
         url: "/api/v1/posts",
         params: params || {},
       }),
       providesTags: (result) =>
-        result
+        result?.posts
           ? [
-              ...result.map(({ id }) => ({ type: "posts" as const, id })),
+              ...result.posts.map(({ id }) => ({ type: "posts" as const, id })),
               { type: "posts", id: "LIST" },
             ]
           : [{ type: "posts", id: "LIST" }],
