@@ -45,7 +45,7 @@ const LoginPage: React.FC = () => {
   //  Handle form submit
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const res = await login(data).unwrap();
+      await login(data).unwrap();
 
       toast.success("Login successful 🎉");
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import type { Post, Comment } from '../../types';
+import type { Post, Comment, Reply } from '../../types';
 import reactImg1 from '../../assets/images/react_img1.png';
 import reactImg2 from '../../assets/images/react_img2.png';
 import reactImg3 from '../../assets/images/react_img3.png';
@@ -93,7 +93,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
     }
   };
 
-  const CommentItem = ({ comment, isReply = false }: { comment: Comment, isReply?: boolean }) => {
+  const CommentItem = ({ comment, isReply = false }: { comment: Comment | Reply, isReply?: boolean }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editText, setEditText] = useState(comment.text);
     const [showCommentOptions, setShowCommentOptions] = useState(false);
@@ -120,6 +120,8 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         }
       }
     };
+
+    const replies = (comment as Comment).replies || [];
 
     return (
       <div className={`flex gap-[12px] ${isReply ? 'mt-[12px] ml-[44px]' : 'mb-[16px]'}`}>
@@ -176,7 +178,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             {!isReply && (
               <button 
                 onClick={() => {
-                  setReplyingTo(comment);
+                  setReplyingTo(comment as Comment);
                   setCommentText(`@${comment.author.firstName} `);
                 }} 
                 className="text-[12px] text-[#666] dark:text-gray-400 hover:text-[#1890FF]"
@@ -190,9 +192,9 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           </div>
           
           {/* Nested Replies */}
-          {comment.replies && comment.replies.length > 0 && (
+          {replies.length > 0 && (
             <div className="_nested_replies">
-              {comment.replies.map(reply => (
+              {replies.map(reply => (
                 <CommentItem key={reply.id} comment={reply} isReply={true} />
               ))}
             </div>
