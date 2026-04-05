@@ -3,7 +3,7 @@
 A modern, responsive Social Feed Frontend built with **React.js** and **Tailwind CSS**. This application delivers a seamless user experience with features like infinite scrolling, real-time feedback, and persistent authentication.
 
 📸 Preview:
-![UI Preview](./public/ui-preview.png)
+![UI Preview](./public/ui-overview.png)
 
 ---
 
