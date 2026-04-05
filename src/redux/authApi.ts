@@ -1,6 +1,5 @@
 import baseApi from "./api/baseApi";
 import { userLoggedIn } from "./authSlice";
-import { jwtDecode } from "jwt-decode";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -22,16 +21,15 @@ export const authApi = baseApi.injectEndpoints({
       async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
           const { data } = await queryFulfilled;
-          console.log("data------>",data)
-          const token = data?.data?.accessToken;
-          console.log("token------>",token)
-          const decodedUser = jwtDecode(token);
+          const accessToken = data?.data?.accessToken;
+          const refreshToken = data?.data?.refreshToken;
+          const user = data?.data?.user;
+          
           dispatch(
             userLoggedIn({
-              accessToken: token,
-              user: {
-                ...decodedUser
-              },
+              accessToken,
+              refreshToken,
+              user,
             })
           );
         } catch (err) {
