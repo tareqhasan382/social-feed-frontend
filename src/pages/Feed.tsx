@@ -7,61 +7,11 @@ import PostCreator from '../components/Feed/PostCreator';
 import PostCard from '../components/Feed/PostCard';
 import MobileBottomNav from '../components/Feed/MobileBottomNav';
 import { useTheme } from '../context/ThemeContext';
-import type { Post } from '../types';
-
-import timelineImg from '../assets/images/timeline_img.png';
-import profile1 from '../assets/images/profile-1.png';
-import people1 from '../assets/images/people1.png';
-import people2 from '../assets/images/people2.png';
+import { useGetPostsQuery } from '../redux/postsApi';
 
 const FeedPage: React.FC = () => {
-  const posts: Post[] = [
-    {
-      id: '1',
-      author: {
-        id: 'u1',
-        name: 'Steve Jobs',
-        avatar: profile1,
-      },
-      time: '42 minutes ago',
-      visibility: 'Public',
-      content: 'The scale of the universe is a map of the observable universe that allows you to explore the world at different levels of zoom. It’s an incredible tool for understanding the relative size of things, from the smallest particles to the largest galaxies.',
-      image: timelineImg,
-      reactions: 124,
-      comments: 42,
-      shares: 12,
-      commentList: [
-        {
-          id: 'c1',
-          author: {
-            id: 'u2',
-            name: 'Ryan Roslansky',
-            avatar: people1,
-          },
-          text: 'This is absolutely mind-blowing! Thanks for sharing.',
-          likes: 5,
-          time: '10m ago'
-        }
-      ]
-    },
-    {
-      id: '2',
-      author: {
-        id: 'u3',
-        name: 'Dylan Field',
-        avatar: people2,
-      },
-      time: '1 hour ago',
-      visibility: 'Friends',
-      content: 'Just finished the new design system for the mobile app. Can’t wait to show you guys what we’ve been working on!',
-      reactions: 89,
-      comments: 15,
-      shares: 5,
-      commentList: []
-    }
-  ];
-
   const { theme, toggleTheme } = useTheme();
+  const { data: posts, isLoading, isError } = useGetPostsQuery();
 
   return (
     <div className="_layout_main_wrapper bg-[#F0F2F5] dark:bg-[#112032] h-screen overflow-hidden transition-all duration-200">
@@ -77,9 +27,24 @@ const FeedPage: React.FC = () => {
                 <Stories />
                 <PostCreator />
                 <div className="_feed_timeline_list">
-                  {posts.map((post) => (
+                  {isLoading && (
+                    <div className="flex justify-center py-10">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1890FF]"></div>
+                    </div>
+                  )}
+                  {isError && (
+                    <div className="text-center py-10 text-red-500">
+                      Failed to load posts. Please try again later.
+                    </div>
+                  )}
+                  {posts?.map((post) => (
                     <PostCard key={post.id} post={post} />
                   ))}
+                  {!isLoading && posts?.length === 0 && (
+                    <div className="text-center py-10 text-gray-500">
+                      No posts yet. Be the first to post!
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -99,12 +64,12 @@ const FeedPage: React.FC = () => {
             {theme === 'light' ? 'Dark' : 'Light'}
           </span>
           {theme === 'light' ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 22 22">
-              <path fill="currentColor" d="M11 20.625a9.625 9.625 0 110-19.25.688.688 0 01.688.688.688.688 0 01-.132.404 8.25 8.25 0 0011.01 11.01.688.688 0 011.092.553 9.625 9.625 0 01-12.658 6.595z" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 22 22">
-              <path fill="currentColor" d="M11 1.375a.688.688 0 01.688.688v1.375a.688.688 0 11-1.375 0V2.063a.688.688 0 01.687-.688zM17.806 4.194a.688.688 0 01.972.973l-.973.972a.688.688 0 11-.972-.972l.973-.973zM20.625 11.001a.688.688 0 01-.688.688h-1.375a.688.688 0 110-1.375h1.375a.688.688 0 01.688.687zM17.806 17.806a.688.688 0 01.973-.972l.972.973a.688.688 0 11-.972.972l-.973-.973zM11 20.625a.688.688 0 01-.688-.688v-1.375a.688.688 0 111.375 0v1.375a.688.688 0 01-.687.688zM4.194 17.806a.688.688 0 01-.973-.972l.973-.973a.688.688 0 11.972.972l-.972.973zM1.375 11a.688.688 0 01.688-.688h1.375a.688.688 0 110 1.375H2.063a.688.688 0 01-.688-.687zM4.194 4.194a.688.688 0 01.972.973l-.972.972a.688.688 0 11-.973-.972l.973-.973zM11 6.188a4.813 4.813 0 100 9.625 4.813 4.813 0 000-9.625zM7.563 11a3.438 3.438 0 116.875 0 3.438 3.438 0 01-6.875 0z" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           )}
         </button>

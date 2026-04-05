@@ -1,51 +1,72 @@
 export interface User {
   id: string;
-  name: string;
-  avatar: string;
-  role?: string;
-  online?: boolean;
-}
-
-export interface Story {
-  id: string;
-  user: User;
-  isOwn?: boolean;
-}
-
-export interface Comment {
-  id: string;
-  author: User;
-  text: string;
-  likes: number;
-  time: string;
+  firstName: string;
+  lastName: string;
+  email?: string; // Optional because it's not always in the author object
+  avatarUrl?: string | null;
 }
 
 export interface Post {
   id: string;
-  author: User;
-  time: string;
-  visibility: string;
   content: string;
-  image?: string;
-  reactions: number;
-  comments: number;
-  shares: number;
-  commentList: Comment[];
+  imageUrl?: string | null;
+  visibility: 'PUBLIC' | 'PRIVATE';
+  authorId: string;
+  author: User;
+  createdAt: string;
+  updatedAt: string;
+  isLiked: boolean;
+  likesCount: number;
+  commentsCount: number;
 }
 
-export interface ExploreItem {
+export interface Reply {
   id: string;
-  label: string;
-  icon: string;
-  badge?: string;
-  link: string;
+  text: string;
+  authorId: string;
+  postId: string;
+  parentId: string;
+  createdAt: string;
+  updatedAt: string;
+  author: User;
+  isLiked: boolean;
+  likesCount: number;
 }
 
-export interface Event {
+export interface Comment {
   id: string;
-  title: string;
-  image: string;
-  date: string;
-  month: string;
-  goingCount: number;
+  text: string;
+  authorId: string;
+  postId: string;
+  parentId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  author: User;
+  replies: Reply[];
+  isLiked: boolean;
+  likesCount: number;
+  repliesCount: number;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+}
+
+export interface CreatePostDto {
+  content: string;
+  imageUrl?: string;
+  visibility?: 'PUBLIC' | 'PRIVATE';
+}
+
+export interface CreateCommentDto {
+  text: string;
+  postId: string;
+  parentId?: string;
+}
+
+export interface ToggleLikeDto {
+  postId?: string;
+  commentId?: string;
 }

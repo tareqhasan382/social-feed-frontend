@@ -8,10 +8,13 @@ export const baseApi = createApi({
     baseUrl: BASE_URL,
     prepareHeaders: (headers) => {
       const authString = localStorage.getItem("social_auth");
+      
       const auth = authString ? JSON.parse(authString) : null;
-      const token = auth ? auth.accessToken : null;
+      
+      const token = auth?.accessToken;
+
       if (token) {
-        headers.set("Authorization", `${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
       headers.set("Content-Type", "application/json");
 

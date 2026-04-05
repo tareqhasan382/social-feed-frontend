@@ -1,7 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
+import { useCreatePostMutation } from '../../redux/postsApi';
 import txtImg from '../../assets/images/txt_img.png';
 
 const PostCreator: React.FC = () => {
+  const [content, setContent] = useState('');
+  const [createPost, { isLoading }] = useCreatePostMutation();
+
+  const handlePost = async () => {
+    if (!content.trim()) {
+      toast.error('Please write something before posting!');
+      return;
+    }
+
+    try {
+      await createPost({ content }).unwrap();
+      setContent('');
+      toast.success('Post created successfully!');
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to create post. Please try again.');
+    }
+  };
+
   return (
     <div className="_feed_inner_text_area bg-white dark:bg-[#232E42] rounded-[6px] p-[24px] mb-[16px] transition-all">
       <div className="_feed_inner_text_area_box flex gap-[16px] mb-[20px]">
@@ -9,7 +29,13 @@ const PostCreator: React.FC = () => {
           <img src={txtImg} alt="Image" className="_txt_img rounded-full object-cover" />
         </div>
         <div className="form-floating _feed_inner_text_area_box_form flex-1 relative">
-          <textarea className="form-control _textarea w-full min-h-[100px] bg-[#F5F5F5] dark:bg-[#112032] border-none rounded-[6px] p-[16px] text-[16px] focus:outline-none dark:text-white placeholder:text-transparent peer" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
+          <textarea 
+            className="form-control _textarea w-full min-h-[100px] bg-[#F5F5F5] dark:bg-[#112032] border-none rounded-[6px] p-[16px] text-[16px] focus:outline-none dark:text-white placeholder:text-transparent peer" 
+            placeholder="Leave a comment here" 
+            id="floatingTextarea"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          ></textarea>
           <label className="_feed_textarea_label absolute top-[16px] left-[16px] text-[#666] dark:text-gray-400 pointer-events-none transition-all peer-focus:opacity-0 peer-[:not(:placeholder-shown)]:opacity-0 flex items-center gap-[8px]" htmlFor="floatingTextarea">
             Write something ...
             <svg xmlns="http://www.w3.org/2000/svg" width="23" height="24" fill="none" viewBox="0 0 23 24">
@@ -45,7 +71,13 @@ const PostCreator: React.FC = () => {
           </button>
         </div>
         <div className="_feed_inner_text_area_btn">
-          <button className="_feed_inner_text_area_btn_link bg-[#1890FF] text-white px-[32px] py-[8px] rounded-[6px] font-medium transition-all hover:shadow-md">Post</button>
+          <button 
+            onClick={handlePost}
+            disabled={isLoading}
+            className="_feed_inner_text_area_btn_link bg-[#1890FF] text-white px-[32px] py-[8px] rounded-[6px] font-medium transition-all hover:shadow-md disabled:opacity-50"
+          >
+            {isLoading ? 'Posting...' : 'Post'}
+          </button>
         </div>
       </div>
 
@@ -57,7 +89,13 @@ const PostCreator: React.FC = () => {
             <button className="text-[#666] dark:text-gray-400"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" strokeWidth="1.5" d="M1 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V5z"/><path stroke="currentColor" strokeWidth="1.5" d="M15 7.5l4-3v11l-4-3"/></svg></button>
             <button className="text-[#666] dark:text-gray-400"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" strokeWidth="1.5" d="M3 17h14M10 3v11m0 0l-4-4m4 4l4-4"/></svg></button>
           </div>
-          <button className="bg-[#1890FF] text-white px-[24px] py-[6px] rounded-[6px] font-medium">Post</button>
+          <button 
+            onClick={handlePost}
+            disabled={isLoading}
+            className="bg-[#1890FF] text-white px-[24px] py-[6px] rounded-[6px] font-medium disabled:opacity-50"
+          >
+            {isLoading ? 'Posting...' : 'Post'}
+          </button>
         </div>
       </div>
     </div>
