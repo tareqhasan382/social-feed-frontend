@@ -6,7 +6,7 @@ export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     signup: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/auth/signup",
+        url: "/api/v1/auth/register",
         method: "POST",
         body: data,
       }),
@@ -14,7 +14,7 @@ export const authApi = baseApi.injectEndpoints({
 
     login: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/auth/sigin",
+        url: "/api/v1/auth/login",
         method: "POST",
         body: data,
       }),
@@ -22,8 +22,9 @@ export const authApi = baseApi.injectEndpoints({
       async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
           const { data } = await queryFulfilled;
-          const token = data?.accessToken;
-          
+          console.log("data------>",data)
+          const token = data?.data?.accessToken;
+          console.log("token------>",token)
           const decodedUser = jwtDecode(token);
           dispatch(
             userLoggedIn({

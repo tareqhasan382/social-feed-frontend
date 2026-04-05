@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/logo.svg';
 import profileImg from '../../assets/images/profile.png';
 import friendReqImg from '../../assets/images/friend-req.png';
 import profile1Img from '../../assets/images/profile-1.png';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import type { RootState } from '../../redux/store';
+import { userLoggedOut } from '../../redux/authSlice';
 
 const Header: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const auth = useAppSelector((state: RootState) => state.auth);
   const [showNotify, setShowNotify] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+    const handleLogout = () => {
+    dispatch(userLoggedOut());
+    navigate("/");
+  };
+  //const isLoggedIn = !!auth?.user;
   return (
     <>
       <nav className="_header_nav navbar navbar-expand-lg navbar-light bg-white dark:bg-[#232E42] border-b border-[#F0F2F5] dark:border-[#2D3748] sticky top-0 z-[1030] py-0 transition-all duration-200">
@@ -23,7 +34,7 @@ const Header: React.FC = () => {
               <form className="_header_form_grp relative">
                 <svg className="_header_form_svg absolute top-[12px] left-[18px]" xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="none" viewBox="0 0 17 17">
                   <circle cx="7" cy="7" r="6" stroke="#666" />
-                  <path stroke="#666" stroke-linecap="round" d="M16 16l-3-3" />
+                  <path stroke="#666" strokeLinecap="round" d="M16 16l-3-3" />
                 </svg>
                 <input className="form-control _inpt1 w-full h-[40px] bg-[#F5F5F5] dark:bg-[#112032] border border-[#F5F5F5] dark:border-[#2D3748] rounded-[32px] pl-[47px] pr-[16px] py-[7px] text-[16px] focus:outline-none focus:border-[#1890FF] transition-all placeholder:text-gray-400 dark:text-white" type="search" placeholder="input search text" />
               </form>
@@ -161,8 +172,9 @@ const Header: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link to="/login" className="flex items-center justify-between group">
-                      <div className="flex items-center text-[14px] text-[#666] dark:text-gray-400 group-hover:text-[#1890FF]">
+                    {auth?.user ? 
+                    <div className="flex items-center justify-between group">
+                      <div onClick={handleLogout} className="flex items-center text-[14px] text-[#666] dark:text-gray-400 group-hover:text-[#1890FF]">
                         <span className="mr-[10px] w-[24px] h-[24px] flex items-center justify-center bg-[#F0F2F5] dark:bg-[#112032] rounded-full">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 19 19">
                             <path stroke="#377DFF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6.667 18H2.889A1.889 1.889 0 011 16.111V2.89A1.889 1.889 0 012.889 1h3.778M13.277 14.222L18 9.5l-4.723-4.722M18 9.5H6.667" />
@@ -173,7 +185,20 @@ const Header: React.FC = () => {
                       <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" fill="none" viewBox="0 0 6 10">
                         <path fill="#112032" className="dark:fill-white" d="M5 5l.354.354L5.707 5l-.353-.354L5 5zM1.354 9.354l4-4-.708-.708-4 4 .708.708zm4-4.708l-4-4-.708.708 4 4 .708-.708z" opacity=".5" />
                       </svg>
-                    </Link>
+                    </div>
+                    : <Link to="/login" className="flex items-center justify-between group">
+                      <div onClick={handleLogout} className="flex items-center text-[14px] text-[#666] dark:text-gray-400 group-hover:text-[#1890FF]">
+                        <span className="mr-[10px] w-[24px] h-[24px] flex items-center justify-center bg-[#F0F2F5] dark:bg-[#112032] rounded-full">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 19 19">
+                            <path stroke="#377DFF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6.667 18H2.889A1.889 1.889 0 011 16.111V2.89A1.889 1.889 0 012.889 1h3.778M13.277 14.222L18 9.5l-4.723-4.722M18 9.5H6.667" />
+                          </svg>
+                        </span>
+                        Log In
+                      </div>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" fill="none" viewBox="0 0 6 10">
+                        <path fill="#112032" className="dark:fill-white" d="M5 5l.354.354L5.707 5l-.353-.354L5 5zM1.354 9.354l4-4-.708-.708-4 4 .708.708zm4-4.708l-4-4-.708.708 4 4 .708-.708z" opacity=".5" />
+                      </svg>
+                    </Link>}
                   </li>
                 </ul>
               </div>

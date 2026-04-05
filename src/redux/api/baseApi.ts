@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "../../App";
-export const BASEURL = BASE_URL;
+export const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
+//console.log("BASEURL-------->", BASE_URL)
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: BASEURL,
+    baseUrl: BASE_URL,
     prepareHeaders: (headers) => {
       const authString = localStorage.getItem("social_auth");
       const auth = authString ? JSON.parse(authString) : null;
