@@ -9,7 +9,9 @@ A modern, responsive Social Feed Frontend built with **React.js** and **Tailwind
 
 ## 🚀 Key Features
 
-- **Dynamic Infinite Feed**: Real-time content loading using `IntersectionObserver` and cursor-based pagination.
+- **Dynamic Infinite Feed**: Real-time content loading using `IntersectionObserver` and cursor-based pagination with duplicate prevention.
+- **Real-Time Synchronization**: WebSocket integration with RTK Query's `onCacheEntryAdded` for instant UI updates (likes, comments, avatars).
+- **Optimistic UI Updates**: Instant feedback for likes and comments to ensure zero perceived latency.
 - **Robust State Management**: Powered by **Redux Toolkit** and **RTK Query** for efficient caching and synchronization.
 - **Persistence & Auth**: Secure JWT handling with automatic token refresh via `async-mutex` to prevent concurrent request storms.
 - **Media Support**: Support for image and video post display, including native video controls and Cloudinary integration.
@@ -27,6 +29,7 @@ A modern, responsive Social Feed Frontend built with **React.js** and **Tailwind
 - **Framework**: [React.js](https://reactjs.org/) (Vite)
 - **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
 - **Data Fetching**: [RTK Query](https://redux-toolkit.js.org/rtk-query/overview)
+- **Real-time**: [Socket.io-client](https://socket.io/docs/v4/client-api/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Routing**: [React Router v6](https://reactrouter.com/)
 - **Icons/Media**: Lucide-react & SVG-based assets
@@ -37,7 +40,7 @@ A modern, responsive Social Feed Frontend built with **React.js** and **Tailwind
 ## 📦 Getting Started
 
 ### **Prerequisites**
-- Node.js (v18 or higher)
+- Node.js (v20 or higher)
 - npm or yarn
 
 ### **Installation**
@@ -67,8 +70,9 @@ A modern, responsive Social Feed Frontend built with **React.js** and **Tailwind
 
 ## 🏗 Project Structure
 
-- `src/redux`: Contains RTK Query API slices and Redux logic.
+- `src/redux`: Contains RTK Query API slices and Redux logic (including `onCacheEntryAdded` listeners).
 - `src/components`: Reusable UI components (Feed, Auth, Common).
+- `src/hooks`: Custom hooks like `useRealtime` for room management.
 - `src/pages`: Main application views (Login, Register, Feed).
 - `src/context`: React Context providers (Theme, Auth).
 - `src/types`: Centralized TypeScript interfaces for API responses and entities.
@@ -77,11 +81,14 @@ A modern, responsive Social Feed Frontend built with **React.js** and **Tailwind
 
 ## 📖 Key Modules
 
+### **Real-Time Synchronization**
+Implemented via `useRealtime` hook and RTK Query cache listeners. When a post is viewed, the client joins a specific WebSocket room (`post:{id}`) to receive targeted updates.
+
 ### **Authentication**
 Managed via `authSlice.ts`. Stores tokens in `localStorage` and provides a base query interceptor for automatic token refresh logic.
 
 ### **Feed & Posts**
-Located in `components/Feed`. Implements the infinite scroll trigger and dynamic post rendering (including video detection).
+Located in `components/Feed`. Implements a robust infinite scroll trigger using `IntersectionObserver` with a container-aware root for smooth loading.
 
 ---
 
@@ -94,8 +101,9 @@ Located in `components/Feed`. Implements the infinite scroll trigger and dynamic
 ---
 
 ## 🛡 Performance & Optimization
-- **Caching**: RTK Query tags are used to intelligently invalidate and refetch data (e.g., updating a post invalidates the feed cache).
-- **Infinite Scroll**: Uses a proactive `rootMargin` to start loading the next page before the user hits the bottom.
+- **Atomic Cache Updates**: RTK Query `updateCachedData` is used to update specific post items without re-fetching the entire list.
+- **Duplicate Prevention**: Feed merge logic filters out duplicate posts that might appear during rapid real-time updates.
+- **Infinite Scroll**: Uses a proactive `rootMargin` and container-based root to start loading the next page before the user hits the bottom.
 - **Bundle Optimization**: Tree-shaking and asset compression via Vite.
 
 ---

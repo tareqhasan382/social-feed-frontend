@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import type { Post, Comment, Reply } from '../../types';
-import reactImg1 from '../../assets/images/react_img1.png';
-import reactImg2 from '../../assets/images/react_img2.png';
-import reactImg3 from '../../assets/images/react_img3.png';
 import commentImg from '../../assets/images/comment_img.png';
 import { useToggleLikeMutation } from '../../redux/likes/likesApi';
 import { useCreateCommentMutation, useGetCommentsQuery, useUpdateCommentMutation, useDeleteCommentMutation } from '../../redux/commentsApi';
 import { useDeletePostMutation, useUpdatePostMutation } from '../../redux/postsApi';
+import { useRealtime } from '../../hooks/useRealtime';
 import avatar from "../../assets/images/Avatar.png"
 
 interface PostCardProps {
@@ -21,6 +19,9 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [isEditingPost, setIsEditingPost] = useState(false);
   const [editPostContent, setEditPostContent] = useState(post.content);
+  
+  // Real-time listener for this post
+  useRealtime(post.id);
   
   const [toggleLike] = useToggleLikeMutation();
   const [createComment, { isLoading: isCommenting }] = useCreateCommentMutation();
@@ -299,29 +300,31 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
       <div className="_feed_inner_timeline_reaction flex items-center justify-between border-t border-b border-[#F0F2F5] dark:border-[#2D3748] py-[12px] mb-[16px]">
         <div className="flex items-center gap-[12px]">
-          <div className="flex -space-x-[8px]">
-            {post.likedUsers && post.likedUsers.length > 0 ? (
-              post.likedUsers.map((user, index) => (
-                <img 
-                  key={user.id} 
-                  src={user.avatarUrl || avatar} 
-                  alt="" 
-                  className="w-[20px] h-[20px] rounded-full border border-white object-cover" 
-                  style={{ zIndex: 3 - index }}
-                />
-              ))
-            ) : (
-              <>
-                <img src={reactImg1} alt="" className="w-[20px] h-[20px] rounded-full border border-white" />
-                <img src={reactImg2} alt="" className="w-[20px] h-[20px] rounded-full border border-white" />
-                <img src={reactImg3} alt="" className="w-[20px] h-[20px] rounded-full border border-white" />
-              </>
-            )}
-          </div>
-          <span className="text-[13px] text-[#666] dark:text-gray-400">{post.likesCount}</span>
+          {post.likesCount > 0 && (
+            <>
+              <div className="flex -space-x-[8px]">
+                {post.likedUsers && post.likedUsers.length > 0 && (
+                  post.likedUsers.slice(0, 3).map((user, index) => (
+                    <img 
+                      key={user.id} 
+                      src={user.avatarUrl || avatar} 
+                      alt="" 
+                      className="w-[20px] h-[20px] rounded-full border border-white object-cover" 
+                      style={{ zIndex: 3 - index }}
+                    />
+                  ))
+                )}
+              </div>
+              <span className="text-[13px] text-[#666] dark:text-gray-400">
+                {post.likesCount} {post.likesCount === 1 ? 'Like' : 'Likes'}
+              </span>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-[16px]">
-          <button onClick={() => setShowComments(!showComments)} className="text-[13px] text-[#666] dark:text-gray-400 hover:text-[#1890FF] transition-all">{post.commentsCount} Comment</button>
+          <button onClick={() => setShowComments(!showComments)} className="text-[13px] text-[#666] dark:text-gray-400 hover:text-[#1890FF] transition-all">
+            {post.commentsCount} {post.commentsCount === 1 ? 'Comment' : 'Comments'}
+          </button>
           <button className="text-[13px] text-[#666] dark:text-gray-400 hover:text-[#1890FF] transition-all">0 Share</button>
         </div>
       </div>

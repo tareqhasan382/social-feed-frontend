@@ -9,7 +9,6 @@ import PostCard from '../components/Feed/PostCard';
 import MobileBottomNav from '../components/Feed/MobileBottomNav';
 import { useTheme } from '../context/ThemeContext';
 import { useGetPostsQuery } from '../redux/postsApi';
-import type { Post } from '../types';
 
 
 const FeedPage: React.FC = () => {
@@ -19,40 +18,29 @@ const FeedPage: React.FC = () => {
   const search = searchParams.get('search') || undefined;
 
   const [cursor, setCursor] = useState<string | undefined>(undefined);
-  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const { data, isLoading, isFetching, isError } = useGetPostsQuery({ cursor, limit: 10, search });
   
-  const observerTarget = useRef(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Reset cursor and posts when search changes
+  // Reset cursor when search changes
   useEffect(() => {
+    console.log('[Feed] Search changed, resetting cursor');
     setCursor(undefined);
-    setAllPosts([]);
   }, [search]);
 
   useEffect(() => {
-    if (data?.posts) {
-      if (cursor === undefined) {
-        setAllPosts(data.posts);
-      } else {
-        setAllPosts(prev => {
-          const newPosts = data.posts.filter(p => !prev.some(ep => ep.id === p.id));
-          return [...prev, ...newPosts];
-        });
-      }
-    }
-  }, [data, cursor]);
-
-  useEffect(() => {
+    console.log('[Feed] Setting up IntersectionObserver. nextCursor:', data?.nextCursor);
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting && data?.nextCursor && !isFetching && !isLoading) {
+          console.log('[Feed] Intersection detected, fetching next page with cursor:', data.nextCursor);
           setCursor(data.nextCursor);
         }
       },
       { 
-        root: null, // use viewport
-        rootMargin: '200px', // start loading before user reaches the end
+        root: scrollContainerRef.current, // Use the scrollable div as root
+        rootMargin: '200px', 
         threshold: 0.1 
       }
     );
@@ -61,8 +49,13 @@ const FeedPage: React.FC = () => {
       observer.observe(observerTarget.current);
     }
 
-    return () => observer.disconnect();
-  }, [data?.nextCursor, isFetching]);
+    return () => {
+      console.log('[Feed] Disconnecting IntersectionObserver');
+      observer.disconnect();
+    };
+  }, [data?.nextCursor, isFetching, isLoading]);
+
+  const allPosts = data?.posts || [];
 
   return (
     <div className="_layout_main_wrapper bg-[#F0F2F5] dark:bg-[#112032] h-screen overflow-hidden transition-all duration-200">
@@ -73,7 +66,10 @@ const FeedPage: React.FC = () => {
           <div className="row flex flex-wrap -mx-4 h-full">
             <LeftSidebar />
             
-            <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 w-full lg:w-1/2 px-4 h-full overflow-y-auto scrollbar-hide pt-[18px]">
+            <div 
+              ref={scrollContainerRef}
+              className="col-xl-6 col-lg-6 col-md-12 col-sm-12 w-full lg:w-1/2 px-4 h-full overflow-y-auto scrollbar-hide pt-[18px]"
+            >
               <div className="_layout_middle_content pb-[80px] lg:pb-0">
                 <Stories />
                 <PostCreator />
