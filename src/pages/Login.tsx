@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import shape1 from '../assets/images/shape1.svg';
 import dark_shape from '../assets/images/dark_shape.svg';
 import shape2 from '../assets/images/shape2.svg';
@@ -28,7 +28,10 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const auth = useSelector((state: RootState) => state.auth);
+
+  const from = location.state?.from?.pathname || "/feed";
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -50,7 +53,7 @@ const LoginPage: React.FC = () => {
       toast.success("Login successful 🎉");
 
       // redirect after login
-      navigate("/feed");
+      navigate(from, { replace: true });
 
     } catch (err: any) {
       console.error("Login failed", err);

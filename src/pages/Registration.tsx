@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import shape1 from '../assets/images/shape1.svg';
 import dark_shape from '../assets/images/dark_shape.svg';
 import shape2 from '../assets/images/shape2.svg';
@@ -11,7 +11,70 @@ import registrationImgDark from '../assets/images/registration1.png';
 import logo from '../assets/images/logo.svg';
 import googleIcon from '../assets/images/google.svg';
 
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useSignupMutation } from '../redux/authApi';
+import toast from 'react-hot-toast';
+
+const registrationSchema = z.object({
+  firstName: z.string().min(2, "First name is too short"),
+  lastName: z.string().min(2, "Last name is too short"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  repeatPassword: z.string().min(6, "Repeat password must be at least 6 characters"),
+  terms: z.boolean().refine(val => val === true, "You must agree to terms & conditions")
+}).refine((data) => data.password === data.repeatPassword, {
+  message: "Passwords don't match",
+  path: ["repeatPassword"],
+});
+
+type RegistrationFormData = z.infer<typeof registrationSchema>;
+
 const RegistrationPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [signup, { isLoading }] = useSignupMutation();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegistrationFormData>({
+    resolver: zodResolver(registrationSchema),
+    defaultValues: {
+      terms: true
+    }
+  });
+
+  const onSubmit = async (data: RegistrationFormData) => {
+    try {
+      // API expects { firstName, lastName, email, password }
+      const payload = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password
+      };
+      
+      await signup(payload).unwrap();
+      toast.success("Registration successful! Please login.");
+      navigate("/login");
+    } catch (err: any) {
+      console.error("Registration failed:", err);
+      const message = err?.data?.message || err?.error || "Registration failed. Please try again";
+      toast.error(message);
+    }
+  };
+
+  useEffect(() => {
+    if (errors.firstName) toast.error(errors.firstName.message!);
+    else if (errors.lastName) toast.error(errors.lastName.message!);
+    else if (errors.email) toast.error(errors.email.message!);
+    else if (errors.password) toast.error(errors.password.message!);
+    else if (errors.repeatPassword) toast.error(errors.repeatPassword.message!);
+    else if (errors.terms) toast.error(errors.terms.message!);
+  }, [errors]);
+
   return (
     <section className="_social_registration_wrapper _layout_main_wrapper min-h-screen py-[100px] bg-[#F0F2F5] dark:bg-[#112032] relative z-1 overflow-hidden">
       {/* Shapes */}
@@ -58,24 +121,36 @@ const RegistrationPage: React.FC = () => {
                   <span className="bg-white dark:bg-[#232E42] px-[10px] relative z-1 text-[14px] text-[#C4C4C4]">Or</span>
                 </div>
 
-                <form className="_social_registration_form">
+                <form className="_social_registration_form" onSubmit={handleSubmit(onSubmit)}>
                   <div className="row flex flex-wrap -mx-4">
                     <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 w-full px-4">
                       <div className="_social_registration_form_input _mar_b14 mb-[14px]">
+                        <label className="_social_registration_label _mar_b8 mb-[8px] block font-medium text-[16px] text-[#4A5568] dark:text-gray-300">First Name</label>
+                        <input {...register("firstName")} type="text" className="form-control _social_registration_input w-full h-[48px] bg-white dark:bg-[#112032] border border-[#E8E8E8] dark:border-[#2D3748] rounded-[6px] px-[16px] focus:outline-none focus:border-[#1890FF] dark:text-white" />
+                      </div>
+                    </div>
+                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 w-full px-4">
+                      <div className="_social_registration_form_input _mar_b14 mb-[14px]">
+                        <label className="_social_registration_label _mar_b8 mb-[8px] block font-medium text-[16px] text-[#4A5568] dark:text-gray-300">Last Name</label>
+                        <input {...register("lastName")} type="text" className="form-control _social_registration_input w-full h-[48px] bg-white dark:bg-[#112032] border border-[#E8E8E8] dark:border-[#2D3748] rounded-[6px] px-[16px] focus:outline-none focus:border-[#1890FF] dark:text-white" />
+                      </div>
+                    </div>
+                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 w-full px-4">
+                      <div className="_social_registration_form_input _mar_b14 mb-[14px]">
                         <label className="_social_registration_label _mar_b8 mb-[8px] block font-medium text-[16px] text-[#4A5568] dark:text-gray-300">Email</label>
-                        <input type="email" className="form-control _social_registration_input w-full h-[48px] bg-white dark:bg-[#112032] border border-[#E8E8E8] dark:border-[#2D3748] rounded-[6px] px-[16px] focus:outline-none focus:border-[#1890FF] dark:text-white" />
+                        <input {...register("email")} type="email" className="form-control _social_registration_input w-full h-[48px] bg-white dark:bg-[#112032] border border-[#E8E8E8] dark:border-[#2D3748] rounded-[6px] px-[16px] focus:outline-none focus:border-[#1890FF] dark:text-white" />
                       </div>
                     </div>
                     <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 w-full px-4">
                       <div className="_social_registration_form_input _mar_b14 mb-[14px]">
                         <label className="_social_registration_label _mar_b8 mb-[8px] block font-medium text-[16px] text-[#4A5568] dark:text-gray-300">Password</label>
-                        <input type="password" className="form-control _social_registration_input w-full h-[48px] bg-white dark:bg-[#112032] border border-[#E8E8E8] dark:border-[#2D3748] rounded-[6px] px-[16px] focus:outline-none focus:border-[#1890FF] dark:text-white" />
+                        <input {...register("password")} type="password" title="Password" className="form-control _social_registration_input w-full h-[48px] bg-white dark:bg-[#112032] border border-[#E8E8E8] dark:border-[#2D3748] rounded-[6px] px-[16px] focus:outline-none focus:border-[#1890FF] dark:text-white" />
                       </div>
                     </div>
                     <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 w-full px-4">
                       <div className="_social_registration_form_input _mar_b14 mb-[14px]">
                         <label className="_social_registration_label _mar_b8 mb-[8px] block font-medium text-[16px] text-[#4A5568] dark:text-gray-300">Repeat Password</label>
-                        <input type="password" className="form-control _social_registration_input w-full h-[48px] bg-white dark:bg-[#112032] border border-[#E8E8E8] dark:border-[#2D3748] rounded-[6px] px-[16px] focus:outline-none focus:border-[#1890FF] dark:text-white" />
+                        <input {...register("repeatPassword")} type="password" title="Repeat Password" className="form-control _social_registration_input w-full h-[48px] bg-white dark:bg-[#112032] border border-[#E8E8E8] dark:border-[#2D3748] rounded-[6px] px-[16px] focus:outline-none focus:border-[#1890FF] dark:text-white" />
                       </div>
                     </div>
                   </div>
@@ -83,7 +158,7 @@ const RegistrationPage: React.FC = () => {
                   <div className="row flex flex-wrap -mx-4">
                     <div className="col-lg-12 col-xl-12 col-md-12 col-sm-12 w-full px-4">
                       <div className="form-check _social_registration_form_check flex items-center">
-                        <input className="form-check-input _social_registration_form_check_input w-[16px] h-[16px] border border-[#1890FF] rounded-full appearance-none checked:bg-[#1890FF] checked:border-transparent relative checked:after:content-[''] checked:after:absolute checked:after:top-1/2 checked:after:left-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:w-[6px] checked:after:h-[6px] checked:after:bg-white checked:after:rounded-full cursor-pointer" type="radio" name="flexRadioDefault" id="flexRadioDefault2" defaultChecked />
+                        <input {...register("terms")} className="form-check-input _social_registration_form_check_input w-[16px] h-[16px] border border-[#1890FF] rounded-full appearance-none checked:bg-[#1890FF] checked:border-transparent relative checked:after:content-[''] checked:after:absolute checked:after:top-1/2 checked:after:left-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:w-[6px] checked:after:h-[6px] checked:after:bg-white checked:after:rounded-full cursor-pointer" type="checkbox" id="flexRadioDefault2" />
                         <label className="form-check-label _social_registration_form_check_label ml-[8px] text-[14px] text-[#2D3748] dark:text-gray-400 cursor-pointer" htmlFor="flexRadioDefault2">I agree to terms & conditions</label>
                       </div>
                     </div>
@@ -92,7 +167,9 @@ const RegistrationPage: React.FC = () => {
                   <div className="row flex flex-wrap -mx-4">
                     <div className="col-lg-12 col-md-12 col-xl-12 col-sm-12 w-full px-4">
                       <div className="_social_registration_form_btn _mar_t40 _mar_b60 mt-[40px] mb-[60px]">
-                        <button type="button" className="_social_registration_form_btn_link _btn1 w-full bg-[#1890FF] text-white py-[12px] rounded-[6px] font-medium text-[16px] transition-all hover:shadow-lg">Login now</button>
+                        <button disabled={isLoading} type="submit" className="_social_registration_form_btn_link _btn1 w-full bg-[#1890FF] text-white py-[12px] rounded-[6px] font-medium text-[16px] transition-all hover:shadow-lg">
+                          {isLoading ? "Registering..." : "Register Now"}
+                        </button>
                       </div>
                     </div>
                   </div>
